@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bayou Legends Team Store</title>
+<meta name="description" content="Order Bayou Legends team shirts. Pick your sizes, add your player, done.">
+<link rel="icon" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<meta name="theme-color" content="#0D1310">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D1310; --panel:#16201A; --panel2:#1D2A22; --line:#2C3B2F;
+  --gold:#C9A44C; --gold-soft:#E0C177; --gold-dim:#8A7133;
+  --cream:#F1ECDC; --muted:#98A78F; --moss:#6E8158;
+  --bad:#D06A50; --ok:#7FA85F;
+  --shadow:0 18px 40px rgba(0,0,0,.45);
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 700px at 50% -220px, #1B2A1F 0%, transparent 70%),
+    var(--ink);
+  color:var(--cream);
+  font:400 16px/1.55 'Barlow',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:12px;
+}
+h1,h2,h3{font-family:'Staatliches',Impact,'Barlow Condensed',sans-serif;font-weight:400;letter-spacing:.02em;margin:0}
+a{color:var(--gold-soft)}
+:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+
+/* ---------- header ---------- */
+.top{padding:26px 0 10px}
+.brand{display:flex;gap:16px;align-items:center}
+.brand img{width:78px;height:auto;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));flex:none}
+.brand h1{font-size:clamp(30px,6.4vw,46px);line-height:.92;color:var(--cream)}
+.brand .sub{
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--gold);font-size:13px;margin-top:4px
+}
+.status{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.pill{
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted)
+}
+.pill.on{border-color:var(--gold-dim);color:var(--gold-soft);background:rgba(201,164,76,.08)}
+.pill.off{border-color:#5A3A30;color:#E5A18B;background:rgba(208,106,80,.1)}
+.note{color:var(--muted);margin:14px 0 0;max-width:60ch}
+
+/* ---------- layout ---------- */
+.grid{display:grid;gap:22px;margin:24px 0 0}
+@media(min-width:900px){ .grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start} }
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card .pad{padding:18px}
+.card h2{font-size:22px;color:var(--cream)}
+.eyebrow{
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  font-size:12px;color:var(--gold);margin:0 0 6px
+}
+
+/* ---------- shirt viewer ---------- */
+.viewer{position:relative;overflow:hidden}
+@media(min-width:900px){ .viewer{position:sticky;top:16px} }
+.tabs{display:flex;gap:6px;padding:12px 12px 0}
+.tab{
+  flex:1;padding:9px 10px;border:1px solid var(--line);background:transparent;color:var(--muted);
+  border-radius:10px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;font-size:13px;transition:background .15s,color .15s,border-color .15s
+}
+.tab[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#17200F}
+.stage{
+  margin:12px;border-radius:10px;
+  background:#FDFCF8;box-shadow:inset 0 1px 14px rgba(30,42,34,.14);
+  border:1px solid var(--gold-dim);display:grid;place-items:center;padding:0;min-height:280px
+}
+.stage img{max-width:100%;height:auto;display:block;border-radius:6px}
+.stage figcaption{
+  color:var(--muted);font-size:13px;padding:8px 4px 2px;text-align:center
+}
+.legend{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:0 14px 14px;color:var(--muted);font-size:13.5px}
+.legend .linkbtn{white-space:nowrap}
+.linkbtn{background:none;border:0;color:var(--gold-soft);cursor:pointer;font:inherit;text-decoration:underline;padding:0}
+
+/* ---------- form ---------- */
+.field{margin:0 0 14px}
+.field label,.lbl{
+  display:block;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;font-size:12.5px;color:var(--muted);margin:0 0 5px
+}
+input[type=text],input[type=number],textarea,select{
+  width:100%;background:#101911;border:1px solid var(--line);color:var(--cream);
+  border-radius:10px;padding:11px 12px;font:400 16px/1.4 'Barlow',sans-serif
+}
+textarea{min-height:70px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#5F6E5C}
+.two{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:520px){ .two{grid-template-columns:2fr 1fr} .two.even{grid-template-columns:1fr 1fr} }
+.hint{color:var(--muted);font-size:13px;margin:5px 0 0}
+
+/* ---------- player rows ---------- */
+.prow{display:grid;grid-template-columns:1fr 84px 34px;gap:10px;align-items:center;margin:0 0 10px}
+.prow input{margin:0}
+.prow .rm{
+  width:34px;height:42px;border-radius:9px;border:1px solid var(--line);background:#101911;color:var(--muted);
+  font-size:18px;line-height:1;cursor:pointer
+}
+.prow .rm:hover{border-color:#5A3A30;color:#E5A18B}
+.prow .rm:disabled{opacity:.3;cursor:default}
+
+/* ---------- size table ---------- */
+.sizes{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.srow{
+  display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
+  padding:9px 12px;border-bottom:1px solid rgba(44,59,47,.7)
+}
+.srow:last-child{border-bottom:0}
+.srow.has{background:rgba(201,164,76,.07)}
+.sname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:.06em}
+.sprice{color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.04em}
+.sup{color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-left:6px}
+.step{display:flex;align-items:center;gap:6px}
+.step button{
+  width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#101911;color:var(--cream);
+  font-size:19px;line-height:1;cursor:pointer
+}
+.step button:hover{border-color:var(--gold-dim)}
+.step button:disabled{opacity:.35;cursor:default}
+.step input{width:46px;text-align:center;padding:7px 4px;font-family:'Barlow Condensed',sans-serif;font-size:18px}
+.sline{min-width:58px;text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:17px;color:var(--gold-soft)}
+
+/* ---------- scoreboard total ---------- */
+.totalbar{
+  position:sticky;bottom:0;margin:16px -18px -18px;padding:14px 18px;
+  background:linear-gradient(180deg,#131E17 0%,#0F1712 100%);
+  border-top:1px solid var(--gold-dim);
+  border-radius:0 0 var(--r) var(--r);
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap
+}
+.tally{flex:1;min-width:150px;display:flex;gap:18px;align-items:baseline}
+.tally .num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1;color:var(--gold)}
+.tally .cap{font-family:'Barlow Condensed',sans-serif;letter-spacing:.16em;text-transform:uppercase;font-size:11.5px;color:var(--muted);display:block;margin-top:3px}
+.btn{
+  border:0;border-radius:11px;padding:13px 20px;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:15px;
+  background:var(--gold);color:#17200F
+}
+.btn:hover{background:var(--gold-soft)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--cream)}
+.btn.ghost:hover{border-color:var(--gold-dim);background:rgba(201,164,76,.06)}
+.btn.small{padding:8px 12px;font-size:13px;border-radius:9px}
+.btn.danger{background:transparent;border:1px solid #5A3A30;color:#E5A18B}
+
+/* ---------- messages ---------- */
+.msg{border-radius:11px;padding:11px 13px;margin:0 0 14px;font-size:15px;display:none}
+.msg.show{display:block}
+.msg.err{background:rgba(208,106,80,.12);border:1px solid #5A3A30;color:#F0BCA9}
+.msg.ok{background:rgba(127,168,95,.12);border:1px solid #3E5734;color:#CFE3BC}
+.msg.info{background:rgba(201,164,76,.09);border:1px solid var(--gold-dim);color:#EBD9AE}
+
+/* ---------- receipt ---------- */
+.code{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.34em;font-size:34px;
+  color:var(--gold);background:#101911;border:1px dashed var(--gold-dim);border-radius:12px;
+  padding:10px 6px 10px 20px;text-align:center;margin:0 0 6px
+}
+.rlist{list-style:none;margin:14px 0;padding:0;border-top:1px solid var(--line)}
+.rlist li{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.rlist .q{font-family:'Barlow Condensed',sans-serif;font-size:17px;color:var(--gold-soft)}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- coach ---------- */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 0 16px}
+@media(min-width:640px){ .stats{grid-template-columns:repeat(4,1fr)} }
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:12px}
+.stat b{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:27px;color:var(--gold);line-height:1.05}
+.stat span{font-family:'Barlow Condensed',sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:11.5px;color:var(--muted)}
+.bars{margin:0 0 6px}
+.bar{display:grid;grid-template-columns:52px 1fr 42px;gap:10px;align-items:center;margin:0 0 7px}
+.bar .track{display:block;height:11px;border-radius:99px;background:#101911;border:1px solid var(--line);overflow:hidden}
+.bar .fill{display:block;height:100%;min-width:2px;border-radius:99px;background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+.bar .k{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px}
+.bar .v{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--gold-soft);text-align:right}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{
+  text-align:left;font-family:'Barlow Condensed',sans-serif;letter-spacing:.14em;text-transform:uppercase;
+  font-size:11.5px;color:var(--muted);font-weight:600;padding:8px 8px;border-bottom:1px solid var(--line);white-space:nowrap
+}
+.tbl td{padding:9px 8px;border-bottom:1px solid rgba(44,59,47,.65);vertical-align:top}
+.tbl tr.paid td{background:rgba(127,168,95,.06)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.chip{
+  display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.04em;
+  background:#101911;border:1px solid var(--line);border-radius:7px;padding:1px 7px;margin:2px 3px 2px 0
+}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.priceGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:640px){ .priceGrid{grid-template-columns:repeat(4,1fr)} }
+.switch{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.switch input{width:auto}
+.sep{height:1px;background:var(--line);margin:18px 0}
+
+/* ---------- size chart ---------- */
+dialog{
+  border:1px solid var(--line);background:var(--panel);color:var(--cream);border-radius:var(--r);
+  padding:0;max-width:440px;width:calc(100% - 32px);box-shadow:var(--shadow)
+}
+dialog::backdrop{background:rgba(6,10,7,.72)}
+
+footer{color:var(--muted);font-size:13.5px;text-align:center;padding:30px 0 40px}
+footer .fcrest{width:34px;opacity:.8;display:block;margin:0 auto 10px}
+.hidden{display:none !important}
+
+@media print{
+  body{background:#fff;color:#000}
+  .noprint,header,footer,.viewer{display:none !important}
+  .card{border:1px solid #999;box-shadow:none;background:#fff;color:#000}
+  .stat b,.bar .v,.tally .num{color:#000}
+  .tbl td,.tbl th{border-color:#bbb}
+}
+@media(prefers-reduced-motion:reduce){ *{transition:none !important;animation:none !important} }
+</style>
+</head>
+<body>
+
+<header class="top wrap noprint">
+  <div class="brand">
+    <img src="assets/crest.png" alt="Bayou Legends crest">
+    <div>
+      <div class="sub">Team Store</div>
+      <h1 id="storeTitle">Bayou Legends</h1>
+    </div>
+  </div>
+  <div class="status">
+    <span class="pill on" id="pillOpen">Ordering open</span>
+    <span class="pill hidden" id="pillDeadline"></span>
+  </div>
+  <p class="note" id="storeMsg"></p>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ SHOP ============ -->
+  <section id="shop" class="grid">
+
+    <figure class="card viewer" style="margin:0">
+      <div class="tabs" role="group" aria-label="Shirt views">
+        <button class="tab" id="tabFront" type="button" aria-pressed="true">Front</button>
+        <button class="tab" id="tabBack" type="button" aria-pressed="false">Back</button>
+      </div>
+      <div class="stage">
+        <img id="stageImg" src="assets/shirt-front.jpg" alt="Bayou Legends shirt, front">
+      </div>
+      <figcaption class="legend">
+        <span id="artNote">Placeholder art — final print may differ slightly.</span>
+        <button class="linkbtn" id="openChart">Size chart</button>
+      </figcaption>
+    </figure>
+
+    <div class="card">
+      <div class="pad">
+        <p class="eyebrow">Step 1</p>
+        <h2>Who are these for?</h2>
+
+        <div class="msg" id="shopMsg" role="status"></div>
+
+        <p class="lbl" style="margin-top:14px">Players on this order</p>
+        <div id="playerRows"></div>
+        <button type="button" class="btn small ghost" id="addPlayer" style="margin:2px 0 18px">+ Add another player</button>
+
+        <div class="two even">
+          <div class="field">
+            <label for="parent">Parent name</label>
+            <input type="text" id="parent" autocomplete="name" placeholder="Robbie Bott">
+          </div>
+          <div class="field">
+            <label for="contact">Phone or email</label>
+            <input type="text" id="contact" autocomplete="tel" placeholder="337-555-0148">
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <p class="eyebrow">Step 2</p>
+        <h2>How many of each size?</h2>
+        <p class="hint" style="margin-bottom:12px">Order for the whole family — siblings, grandparents, the whole sideline.</p>
+        <div class="sizes" id="sizeRows"></div>
+
+        <div class="field" style="margin-top:16px">
+          <label for="note">Anything the coach should know <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+          <textarea id="note" placeholder="Adding one for Grandma, she'll pick it up at the tournament."></textarea>
+        </div>
+
+        <p class="hint" id="payNote"></p>
+
+        <div class="totalbar">
+          <div class="tally" aria-live="polite">
+            <div><span class="num" id="tShirts">0</span><span class="cap">Shirts</span></div>
+            <div><span class="num" id="tMoney">$0</span><span class="cap">Total due</span></div>
+          </div>
+          <button class="btn" id="submitBtn">Place order</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RECEIPT ============ -->
+  <section id="receipt" class="card hidden" style="margin-top:24px">
+    <div class="pad">
+      <p class="eyebrow">Order in</p>
+      <h2 id="rHead">You're on the list</h2>
+      <div class="msg" id="rMsg" role="status"></div>
+      <p class="hint" style="margin-top:12px">Keep this code — it's how you change or cancel the order before the deadline.</p>
+      <div class="code" id="rCode">----</div>
+      <p class="hint" id="rWho"></p>
+      <ul class="rlist" id="rList"></ul>
+      <div class="tally">
+        <div><span class="num" id="rShirts">0</span><span class="cap">Shirts</span></div>
+        <div><span class="num" id="rMoney">$0</span><span class="cap">Total due</span></div>
+        <div><span class="num" id="rPaid" style="font-size:18px">Unpaid</span><span class="cap">Status</span></div>
+      </div>
+      <p class="hint" id="rPay" style="margin-top:12px"></p>
+      <div class="row-actions">
+        <button class="btn small" id="editOrder">Change this order</button>
+        <button class="btn small ghost" id="newOrder">Order for another player</button>
+        <button class="btn small danger" id="cancelOrder">Cancel order</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FIND AN ORDER ============ -->
+  <section id="finder" class="card hidden noprint" style="margin-top:24px">
+    <div class="pad">
+      <p class="eyebrow">Already ordered?</p>
+      <h2>Pull up an order</h2>
+      <div class="msg" id="fMsg" role="status"></div>
+      <div class="two" style="margin-top:12px;align-items:end">
+        <div class="field" style="margin:0">
+          <label for="findCode">Order code</label>
+          <input type="text" id="findCode" maxlength="4" autocomplete="off" placeholder="K7Q2" style="text-transform:uppercase">
+        </div>
+        <button class="btn" id="findBtn" style="width:100%">Find it</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COACH ============ -->
+  <section id="coach" class="hidden" style="margin-top:24px">
+
+    <div class="card noprint" id="pinCard">
+      <div class="pad">
+        <p class="eyebrow">Coach tools</p>
+        <h2 id="pinHead">Enter your PIN</h2>
+        <div class="msg" id="pinMsg" role="status"></div>
+        <div class="two" style="margin-top:12px;align-items:end">
+          <div class="field" style="margin:0">
+            <label for="pin">PIN</label>
+            <input type="password" id="pin" autocomplete="current-password">
+          </div>
+          <button class="btn" id="pinBtn" style="width:100%">Open</button>
+        </div>
+        <p class="hint" id="pinHint">Set COACH_PIN in Netlify so the PIN lives on the server. If it is not set yet, the first PIN typed here becomes the PIN &mdash; so do this before you share the link.</p>
+      </div>
+    </div>
+
+    <div id="coachBody" class="hidden">
+
+      <div class="card">
+        <div class="pad">
+          <div class="panel-h">
+            <div>
+              <p class="eyebrow">The print run</p>
+              <h2>What to order</h2>
+            </div>
+            <div class="row-actions noprint" style="margin:0">
+              <button class="btn small ghost" id="printBtn">Print run sheet</button>
+              <button class="btn small ghost" id="csvSizes">Sizes CSV</button>
+              <button class="btn small ghost" id="csvOrders">Orders CSV</button>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><b id="sOrders">0</b><span>Orders</span></div>
+            <div class="stat"><b id="sShirts">0</b><span>Shirts</span></div>
+            <div class="stat"><b id="sMoney">$0</b><span>Owed total</span></div>
+            <div class="stat"><b id="sDue">$0</b><span>Still unpaid</span></div>
+          </div>
+          <div class="bars" id="sizeBars"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="pad">
+          <div class="panel-h">
+            <div>
+              <p class="eyebrow">Roster</p>
+              <h2>Orders</h2>
+            </div>
+            <button class="btn small noprint" id="addOrder">Add an order</button>
+          </div>
+          <div class="msg" id="cMsg" role="status"></div>
+          <div class="scroll">
+            <table class="tbl" id="ordersTbl">
+              <thead><tr>
+                <th>Players</th><th>Parent</th><th>Contact</th><th>Shirts</th><th>Total</th><th>Paid</th><th>Code</th><th class="noprint"></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="hint" id="emptyNote">No orders yet.</p>
+        </div>
+      </div>
+
+      <div class="card noprint" style="margin-top:18px">
+        <div class="pad">
+          <p class="eyebrow">Settings</p>
+          <h2>Prices and store</h2>
+          <div class="msg" id="setMsg" role="status"></div>
+
+          <div class="switch" style="margin-top:14px">
+            <input type="checkbox" id="openToggle">
+            <label for="openToggle" style="margin:0">Ordering is open to parents</label>
+          </div>
+
+          <p class="lbl">Price per shirt</p>
+          <div class="priceGrid" id="priceGrid"></div>
+          <p class="hint">Changing a price updates every order total, including ones already placed.</p>
+
+          <div class="sep"></div>
+
+          <div class="field">
+            <label for="setTitle">Store name</label>
+            <input type="text" id="setTitle">
+          </div>
+          <div class="field">
+            <label for="setDeadline">Deadline line <span style="text-transform:none;letter-spacing:0">(shown as a badge)</span></label>
+            <input type="text" id="setDeadline" placeholder="Orders close Friday, Aug 21">
+          </div>
+          <div class="field">
+            <label for="setMsg2">Note to parents</label>
+            <textarea id="setMsg2"></textarea>
+          </div>
+          <div class="field">
+            <label for="setPay">Payment instructions</label>
+            <textarea id="setPay"></textarea>
+          </div>
+          <div class="two even">
+            <div class="field">
+              <label for="setFront">Front image path</label>
+              <input type="text" id="setFront" placeholder="assets/shirt-front.jpg">
+            </div>
+            <div class="field">
+              <label for="setBack">Back image path</label>
+              <input type="text" id="setBack" placeholder="assets/shirt-back.jpg">
+            </div>
+          </div>
+          <button class="btn" id="saveSettings">Save settings</button>
+
+          <div class="sep"></div>
+          <p class="lbl">Start a new season</p>
+          <div class="two" style="align-items:end">
+            <div class="field" style="margin:0">
+              <label for="clearWord">Type CLEAR to empty every order</label>
+              <input type="text" id="clearWord" autocomplete="off">
+            </div>
+            <button class="btn danger" id="clearBtn" style="width:100%">Clear all orders</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="noprint">
+  <img src="assets/crest.png" alt="" class="fcrest">
+  <p>Bayou Legends &middot; <button class="linkbtn" id="coachLink">Coach tools</button> &middot; <button class="linkbtn" id="findLink">Find my order</button></p>
+  <p id="modeNote"></p>
+</footer>
+
+<dialog id="chartDlg">
+  <div class="pad" style="padding:18px">
+    <h2>Size chart</h2>
+    <p class="hint">Adult unisex tee, measured flat in inches. Chest is half the shirt, pit to pit.</p>
+    <table class="tbl" style="margin-top:10px">
+      <thead><tr><th>Size</th><th>Chest</th><th>Length</th></tr></thead>
+      <tbody>
+        <tr><td>XS</td><td>17</td><td>27</td></tr>
+        <tr><td>S</td><td>18</td><td>28</td></tr>
+        <tr><td>M</td><td>20</td><td>29</td></tr>
+        <tr><td>L</td><td>22</td><td>30</td></tr>
+        <tr><td>XL</td><td>24</td><td>31</td></tr>
+        <tr><td>2XL</td><td>26</td><td>32</td></tr>
+        <tr><td>3XL</td><td>28</td><td>33</td></tr>
+        <tr><td>4XL</td><td>30</td><td>34</td></tr>
+      </tbody>
+    </table>
+    <p class="hint">Measurements are approximate and can run about an inch either way.</p>
+    <button class="btn small ghost" id="closeChart" style="margin-top:12px">Close</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+'use strict';
+
+var SIZES = ['XS','S','M','L','XL','2XL','3XL','4XL'];
+var LS_CODES = 'bl-shirt-codes';
+var cfg = null, myOrder = null, coachPin = null, coachOrders = [], demoMode = false, editingId = null;
+var players = [{ name: '', number: '' }];
+var qty = {};
+SIZES.forEach(function(s){ qty[s] = 0; });
+
+var $ = function(id){ return document.getElementById(id); };
+var money = function(n){
+  n = Number(n) || 0;
+  return '$' + (Math.round(n * 100) / 100).toFixed(n % 1 === 0 ? 0 : 2);
+};
+var esc = function(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+  });
+};
+/* ---------- player rows (one order can cover several kids) ---------- */
+
+function drawPlayers(){
+  var box = $('playerRows');
+  box.innerHTML = players.map(function(p, i){
+    return '<div class="prow">' +
+      '<input type="text" data-pname="' + i + '" value="' + esc(p.name) + '" placeholder="' + (i === 0 ? 'Ella Boudreaux' : 'Another player') + '" aria-label="Player ' + (i+1) + ' name">' +
+      '<input type="text" data-pnum="' + i + '" value="' + esc(p.number) + '" inputmode="numeric" placeholder="#" aria-label="Player ' + (i+1) + ' jersey number">' +
+      '<button type="button" class="rm" data-prm="' + i + '"' + (players.length < 2 ? ' disabled' : '') + ' aria-label="Remove this player">&times;</button>' +
+    '</div>';
+  }).join('');
+  $('addPlayer').disabled = players.length >= 8;
+}
+$('playerRows').addEventListener('input', function(e){
+  var t = e.target;
+  if (t.dataset.pname != null) players[+t.dataset.pname].name = t.value;
+  if (t.dataset.pnum != null) players[+t.dataset.pnum].number = t.value.replace(/\D/g, '');
+});
+$('playerRows').addEventListener('click', function(e){
+  var b = e.target.closest('button');
+  if (!b || b.dataset.prm == null) return;
+  if (players.length < 2) return;
+  players.splice(+b.dataset.prm, 1);
+  drawPlayers();
+});
+$('addPlayer').addEventListener('click', function(){
+  if (players.length >= 8) return;
+  players.push({ name: '', number: '' });
+  drawPlayers();
+  var last = $('playerRows').querySelector('.prow:last-child input');
+  if (last) last.focus();
+});
+
+function say(el, text, kind){
+  el.className = 'msg ' + (kind || 'info') + (text ? ' show' : '');
+  el.textContent = text || '';
+}
+
+/* ---------------- transport ---------------- */
+
+function api(action, body){
+  var payload = Object.assign({ action: action }, body || {});
+  if (demoMode) return Promise.resolve(demo(payload));
+  return fetch('/api/orders', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(r){
+    return r.text().then(function(txt){
+      var j = null;
+      try { j = JSON.parse(txt); } catch (e) {}
+      if (!j) {
+        if (r.status === 404) { demoMode = true; showDemoBanner(); return demo(payload); }
+        throw new Error('The store did not answer. Give it a moment and try again.');
+      }
+      if (!r.ok) throw new Error(j.error || 'Something went wrong.');
+      return j;
+    });
+  }).catch(function(err){
+    if (err instanceof TypeError) {          // no function behind the page
+      demoMode = true;
+      showDemoBanner();
+      return demo(payload);
+    }
+    throw err;
+  });
+}
+
+/* Preview fallback so the page still works opened straight from a folder. */
+var D = {
+  open: true,
+  title: 'Bayou Legends',
+  message: 'One order per family, please \u2014 add every player you\u2019re shirting for below. Shirts hand out at practice once the whole run comes back from the printer.',
+  deadline: '',
+  payNote: 'Pay Coach Robbie at practice — cash or Venmo. Orders are not sent to the printer until paid.',
+  prices: { XS:18, S:18, M:18, L:18, XL:18, '2XL':20, '3XL':21, '4XL':22 },
+  images: { front:'assets/shirt-front.jpg', back:'assets/shirt-back.jpg' },
+  orders: []
+};
+function dConf(){
+  return { open:D.open, title:D.title, message:D.message, deadline:D.deadline, payNote:D.payNote,
+           prices:D.prices, images:D.images, sizes:SIZES, pinSet:true };
+}
+function dTotal(sizes){
+  return SIZES.reduce(function(t,s){ return t + (D.prices[s] || 0) * (sizes[s] || 0); }, 0);
+}
+function demo(b){
+  var i;
+  if (b.action === 'get') return { config: dConf() };
+  if (b.action === 'auth') return { ok:true, config: dConf(), orders: D.orders };
+  if (b.action === 'submit' || b.action === 'add') {
+    var count = SIZES.reduce(function(t,s){ return t + (Number(b.sizes[s]) || 0); }, 0);
+    var plist = (Array.isArray(b.players) ? b.players : []).filter(function(p){ return p && p.name; });
+    if (!plist.length) throw new Error('Add at least one player.');
+    if (!b.parent) throw new Error('Enter the parent\u2019s name.');
+    if (String(b.contact || '').trim().length < 6) throw new Error('Add a phone number or email.');
+    if (!count) throw new Error('Choose at least one shirt.');
+    var o = { id:'d'+Date.now(), code: Math.random().toString(36).slice(2,6).toUpperCase(),
+      players: plist.map(function(p){ return { name:p.name, number: p.number === '' || p.number == null ? null : Number(p.number) }; }),
+      parent:b.parent, contact:b.contact,
+      sizes:b.sizes, note:b.note || '', total:dTotal(b.sizes), paid:false, at:new Date().toISOString() };
+    D.orders.push(o);
+    return { ok:true, order:o, config:dConf(), orders:D.orders };
+  }
+  if (b.action === 'lookup') {
+    var f = D.orders.filter(function(o){ return o.code === String(b.code).toUpperCase(); })[0];
+    if (!f) throw new Error('No order matches that code.');
+    return { config: dConf(), order: f };
+  }
+  if (b.action === 'update' || b.action === 'edit') {
+    i = D.orders.findIndex(function(o){ return b.code ? o.code === String(b.code).toUpperCase() : o.id === b.id; });
+    if (i < 0) throw new Error('That order is gone.');
+    var plist2 = (Array.isArray(b.players) ? b.players : []).filter(function(p){ return p && p.name; });
+    if (!plist2.length) throw new Error('Add at least one player.');
+    D.orders[i] = Object.assign({}, D.orders[i], {
+      players: plist2.map(function(p){ return { name:p.name, number: p.number === '' || p.number == null ? null : Number(p.number) }; }),
+      parent:b.parent, contact:b.contact, sizes:b.sizes, note:b.note || '', total:dTotal(b.sizes)
+    });
+    return { ok:true, order:D.orders[i], config:dConf(), orders:D.orders };
+  }
+  if (b.action === 'cancel' || b.action === 'delete') {
+    i = D.orders.findIndex(function(o){ return b.code ? o.code === String(b.code).toUpperCase() : o.id === b.id; });
+    if (i > -1) D.orders.splice(i, 1);
+    return { ok:true, config:dConf(), orders:D.orders };
+  }
+  if (b.action === 'paid') {
+    i = D.orders.findIndex(function(o){ return o.id === b.id; });
+    if (i > -1) D.orders[i].paid = !!b.paid;
+    return { ok:true, config:dConf(), orders:D.orders };
+  }
+  if (b.action === 'settings') {
+    var s = b.settings || {};
+    if (typeof s.open === 'boolean') D.open = s.open;
+    ['title','message','deadline','payNote'].forEach(function(k){ if (typeof s[k] === 'string') D[k] = s[k]; });
+    if (s.prices) SIZES.forEach(function(z){ D.prices[z] = Number(s.prices[z]) || 0; });
+    if (s.images) { if (s.images.front) D.images.front = s.images.front; if (s.images.back) D.images.back = s.images.back; }
+    D.orders = D.orders.map(function(o){ return Object.assign({}, o, { total: dTotal(o.sizes) }); });
+    return { ok:true, config:dConf(), orders:D.orders };
+  }
+  if (b.action === 'reset') { D.orders = []; return { ok:true, config:dConf(), orders:D.orders }; }
+  throw new Error('Unknown action.');
+}
+function showDemoBanner(){
+  $('modeNote').textContent = 'Preview mode — no server behind this page, so orders are held in this tab only.';
+}
+
+/* ---------------- shop ---------------- */
+
+function applyConfig(){
+  $('storeTitle').textContent = cfg.title || 'Bayou Legends';
+  document.title = (cfg.title || 'Bayou Legends') + ' \u2014 Team Store';
+  $('storeMsg').textContent = cfg.message || '';
+  $('payNote').textContent = cfg.payNote || '';
+  $('rPay').textContent = cfg.payNote || '';
+
+  var pd = $('pillDeadline');
+  if (cfg.deadline) { pd.textContent = cfg.deadline; pd.classList.remove('hidden'); }
+  else pd.classList.add('hidden');
+
+  var po = $('pillOpen');
+  po.textContent = cfg.open ? 'Ordering open' : 'Ordering closed';
+  po.className = 'pill ' + (cfg.open ? 'on' : 'off');
+
+  $('stageImg').src = ($('tabBack').getAttribute('aria-pressed') === 'true' ? cfg.images.back : cfg.images.front);
+  $('submitBtn').disabled = !cfg.open;
+  if (!cfg.open) say($('shopMsg'), 'Ordering is closed for now. Text the coach if you still need shirts.', 'err');
+  drawSizes();
+}
+
+function drawSizes(){
+  var box = $('sizeRows');
+  box.innerHTML = '';
+  var base = cfg.prices.L;
+  SIZES.forEach(function(s){
+    var price = cfg.prices[s];
+    var row = document.createElement('div');
+    row.className = 'srow' + (qty[s] > 0 ? ' has' : '');
+    row.innerHTML =
+      '<div><span class="sname">' + s + '</span>' +
+        (price > base ? '<span class="sup">+' + money(price - base) + '</span>' : '') +
+        '<div class="sprice">' + money(price) + ' each</div></div>' +
+      '<div class="step">' +
+        '<button type="button" data-dec="' + s + '" aria-label="One fewer ' + s + '"' + (qty[s] ? '' : ' disabled') + '>&minus;</button>' +
+        '<input type="text" inputmode="numeric" data-qty="' + s + '" value="' + qty[s] + '" aria-label="' + s + ' quantity">' +
+        '<button type="button" data-inc="' + s + '" aria-label="One more ' + s + '">+</button>' +
+      '</div>' +
+      '<div class="sline">' + (qty[s] ? money(price * qty[s]) : '&mdash;') + '</div>';
+    box.appendChild(row);
+  });
+  tally();
+}
+
+function counts(){
+  var n = 0, t = 0;
+  SIZES.forEach(function(s){ n += qty[s]; t += (cfg.prices[s] || 0) * qty[s]; });
+  return { n: n, t: t };
+}
+function tally(){
+  var c = counts();
+  $('tShirts').textContent = c.n;
+  $('tMoney').textContent = money(c.t);
+  $('submitBtn').disabled = !cfg.open || c.n === 0;
+}
+function bump(s, by){
+  qty[s] = Math.max(0, Math.min(25, qty[s] + by));
+  drawSizes();
+}
+
+$('sizeRows').addEventListener('click', function(e){
+  var t = e.target.closest('button');
+  if (!t) return;
+  if (t.dataset.inc) bump(t.dataset.inc, 1);
+  if (t.dataset.dec) bump(t.dataset.dec, -1);
+});
+$('sizeRows').addEventListener('input', function(e){
+  var t = e.target;
+  if (!t.dataset.qty) return;
+  var v = parseInt(String(t.value).replace(/\D/g, ''), 10);
+  qty[t.dataset.qty] = isNaN(v) ? 0 : Math.max(0, Math.min(25, v));
+  tally();
+});
+$('sizeRows').addEventListener('change', function(e){ if (e.target.dataset.qty) drawSizes(); });
+
+function formValues(){
+  return {
+    players: players
+      .map(function(p){ return { name: p.name.trim(), number: p.number }; })
+      .filter(function(p){ return p.name; }),
+    parent: $('parent').value,
+    contact: $('contact').value,
+    sizes: Object.assign({}, qty),
+    note: $('note').value
+  };
+}
+
+$('submitBtn').addEventListener('click', function(){
+  var btn = this;
+  btn.disabled = true;
+  say($('shopMsg'), '', 'info');
+  var body = formValues();
+  var editingCode = myOrder && editingId === 'self' ? myOrder.code : null;
+  api(editingCode ? 'update' : 'submit', editingCode ? Object.assign({ code: editingCode }, body) : body)
+    .then(function(res){
+      myOrder = res.order;
+      editingId = null;
+      remember(res.order.code);
+      showReceipt(res.order, editingCode ? 'Order updated.' : null);
+    })
+    .catch(function(err){ say($('shopMsg'), err.message, 'err'); btn.disabled = false; });
+});
+
+/* ---------------- receipt ---------------- */
+
+function remember(code){
+  try {
+    var list = JSON.parse(localStorage.getItem(LS_CODES) || '[]');
+    if (list.indexOf(code) < 0) list.push(code);
+    localStorage.setItem(LS_CODES, JSON.stringify(list));
+  } catch (e) {}
+}
+function forget(code){
+  try {
+    var list = JSON.parse(localStorage.getItem(LS_CODES) || '[]').filter(function(c){ return c !== code; });
+    localStorage.setItem(LS_CODES, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function showReceipt(o, msg){
+  myOrder = o;
+  $('shop').classList.add('hidden');
+  $('finder').classList.add('hidden');
+  $('coach').classList.add('hidden');
+  $('receipt').classList.remove('hidden');
+  say($('rMsg'), msg || '', 'ok');
+  $('rCode').textContent = o.code;
+  var who = (o.players || []).map(function(p){ return p.name + (p.number != null ? ' #' + p.number : ''); }).join(', ');
+  $('rWho').textContent = who + ' \u2014 ordered by ' + o.parent;
+  var n = 0;
+  $('rList').innerHTML = SIZES.filter(function(s){ return o.sizes[s]; }).map(function(s){
+    n += o.sizes[s];
+    return '<li><span class="q">' + o.sizes[s] + ' &times; ' + s + '</span><span>' + money((cfg.prices[s] || 0) * o.sizes[s]) + '</span></li>';
+  }).join('');
+  $('rShirts').textContent = n;
+  $('rMoney').textContent = money(o.total);
+  $('rPaid').textContent = o.paid ? 'Paid' : 'Unpaid';
+  $('rPaid').style.color = o.paid ? 'var(--ok)' : 'var(--gold)';
+  $('editOrder').disabled = o.paid || !cfg.open;
+  $('cancelOrder').disabled = o.paid || !cfg.open;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('editOrder').addEventListener('click', function(){
+  var o = myOrder;
+  players = (o.players && o.players.length ? o.players : [{ name: '', number: '' }])
+    .map(function(p){ return { name: p.name, number: p.number == null ? '' : String(p.number) }; });
+  $('parent').value = o.parent;
+  $('contact').value = o.contact;
+  $('note').value = o.note || '';
+  SIZES.forEach(function(s){ qty[s] = o.sizes[s] || 0; });
+  editingId = 'self';
+  $('receipt').classList.add('hidden');
+  $('shop').classList.remove('hidden');
+  $('submitBtn').textContent = 'Save changes';
+  say($('shopMsg'), 'Editing order ' + o.code + '. Saving replaces what was there.', 'info');
+  drawPlayers();
+  drawSizes();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+$('newOrder').addEventListener('click', function(){
+  myOrder = null; editingId = null;
+  players = [{ name: '', number: '' }];
+  $('note').value = '';
+  SIZES.forEach(function(s){ qty[s] = 0; });
+  $('submitBtn').textContent = 'Place order';
+  $('submitBtn').disabled = true;
+  say($('shopMsg'), '', 'info');
+  $('receipt').classList.add('hidden');
+  $('shop').classList.remove('hidden');
+  drawPlayers();
+  drawSizes();
+  $('playerRows').querySelector('input').focus();
+});
+
+$('cancelOrder').addEventListener('click', function(){
+  var btn = this;
+  if (btn.dataset.armed !== '1') {
+    btn.dataset.armed = '1';
+    btn.textContent = 'Tap again to cancel';
+    setTimeout(function(){ btn.dataset.armed = '0'; btn.textContent = 'Cancel order'; }, 5000);
+    return;
+  }
+  api('cancel', { code: myOrder.code }).then(function(){
+    forget(myOrder.code);
+    myOrder = null;
+    btn.dataset.armed = '0';
+    btn.textContent = 'Cancel order';
+    $('receipt').classList.add('hidden');
+    $('shop').classList.remove('hidden');
+    SIZES.forEach(function(s){ qty[s] = 0; });
+    $('submitBtn').textContent = 'Place order';
+    drawSizes();
+    say($('shopMsg'), 'Order cancelled. Nothing is on the list for you now.', 'ok');
+  }).catch(function(err){ say($('rMsg'), err.message, 'err'); });
+});
+
+/* ---------------- find an order ---------------- */
+
+$('findLink').addEventListener('click', function(){
+  $('finder').classList.remove('hidden');
+  $('findCode').focus();
+});
+$('findBtn').addEventListener('click', function(){
+  var code = $('findCode').value.trim().toUpperCase();
+  if (code.length !== 4) { say($('fMsg'), 'Order codes are four characters.', 'err'); return; }
+  api('lookup', { code: code }).then(function(res){
+    cfg = res.config; applyConfig();
+    remember(code);
+    say($('fMsg'), '', 'info');
+    showReceipt(res.order);
+  }).catch(function(err){ say($('fMsg'), err.message, 'err'); });
+});
+
+/* ---------------- viewer ---------------- */
+
+function pickView(back){
+  $('tabBack').setAttribute('aria-pressed', back ? 'true' : 'false');
+  $('tabFront').setAttribute('aria-pressed', back ? 'false' : 'true');
+  var img = $('stageImg');
+  img.src = back ? cfg.images.back : cfg.images.front;
+  img.alt = 'Bayou Legends shirt, ' + (back ? 'back' : 'front');
+}
+$('tabFront').addEventListener('click', function(){ pickView(false); });
+$('tabBack').addEventListener('click', function(){ pickView(true); });
+$('openChart').addEventListener('click', function(){ $('chartDlg').showModal(); });
+$('closeChart').addEventListener('click', function(){ $('chartDlg').close(); });
+
+/* ---------------- coach ---------------- */
+
+$('coachLink').addEventListener('click', function(){
+  $('coach').classList.remove('hidden');
+  $('pin').focus();
+  $('coach').scrollIntoView({ behavior: 'smooth' });
+});
+
+$('pinBtn').addEventListener('click', function(){
+  var pin = $('pin').value.trim();
+  api('auth', { pin: pin }).then(function(res){
+    coachPin = pin;
+    cfg = res.config; coachOrders = res.orders || [];
+    $('pinCard').classList.add('hidden');
+    $('coachBody').classList.remove('hidden');
+    $('shop').classList.add('hidden');
+    $('receipt').classList.add('hidden');
+    $('finder').classList.add('hidden');
+    applyConfig();
+    fillSettings();
+    drawCoach();
+    if (res.firstRun) say($('cMsg'), 'PIN set. Put COACH_PIN in Netlify\u2019s environment variables to lock it down properly.', 'info');
+  }).catch(function(err){ say($('pinMsg'), err.message, 'err'); });
+});
+$('pin').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('pinBtn').click(); });
+
+function coachApi(action, body){
+  return api(action, Object.assign({ pin: coachPin }, body || {})).then(function(res){
+    if (res.config) { cfg = res.config; applyConfig(); }
+    if (res.orders) { coachOrders = res.orders; drawCoach(); }
+    return res;
+  });
+}
+
+function sizeTotals(){
+  var t = {};
+  SIZES.forEach(function(s){ t[s] = 0; });
+  coachOrders.forEach(function(o){ SIZES.forEach(function(s){ t[s] += (o.sizes[s] || 0); }); });
+  return t;
+}
+
+function drawCoach(){
+  var totals = sizeTotals();
+  var shirts = SIZES.reduce(function(a, s){ return a + totals[s]; }, 0);
+  var owed = coachOrders.reduce(function(a, o){ return a + o.total; }, 0);
+  var due = coachOrders.filter(function(o){ return !o.paid; }).reduce(function(a, o){ return a + o.total; }, 0);
+  $('sOrders').textContent = coachOrders.length;
+  $('sShirts').textContent = shirts;
+  $('sMoney').textContent = money(owed);
+  $('sDue').textContent = money(due);
+
+  var peak = Math.max.apply(null, SIZES.map(function(s){ return totals[s]; }).concat([1]));
+  $('sizeBars').innerHTML = SIZES.map(function(s){
+    var pct = Math.round((totals[s] / peak) * 100);
+    return '<div class="bar"><span class="k">' + s + '</span>' +
+      '<span class="track">' + (totals[s] ? '<span class="fill" style="width:' + pct + '%"></span>' : '') + '</span>' +
+      '<span class="v">' + totals[s] + '</span></div>';
+  }).join('');
+
+  var tb = $('ordersTbl').querySelector('tbody');
+  tb.innerHTML = coachOrders.slice().sort(function(a, b){
+    var an = (a.players && a.players[0] ? a.players[0].name : '');
+    var bn = (b.players && b.players[0] ? b.players[0].name : '');
+    return an.localeCompare(bn);
+  }).map(function(o){
+    var chips = SIZES.filter(function(s){ return o.sizes[s]; })
+      .map(function(s){ return '<span class="chip">' + o.sizes[s] + '\u00d7' + s + '</span>'; }).join('');
+    var plist = (o.players || []).map(function(p){
+      return esc(p.name) + (p.number != null ? ' <span class="hint" style="display:inline">#' + p.number + '</span>' : '');
+    }).join('<br>');
+    return '<tr class="' + (o.paid ? 'paid' : '') + '" data-id="' + o.id + '">' +
+      '<td>' + plist + (o.note ? '<div class="hint">' + esc(o.note) + '</div>' : '') + '</td>' +
+      '<td>' + esc(o.parent) + '</td>' +
+      '<td>' + esc(o.contact) + '</td>' +
+      '<td>' + chips + '</td>' +
+      '<td>' + money(o.total) + '</td>' +
+      '<td><input type="checkbox" data-paid="' + o.id + '"' + (o.paid ? ' checked' : '') + ' aria-label="Paid"></td>' +
+      '<td><span class="chip">' + o.code + '</span></td>' +
+      '<td class="noprint" style="white-space:nowrap">' +
+        '<button class="btn small ghost" data-edit="' + o.id + '">Edit</button> ' +
+        '<button class="btn small danger" data-del="' + o.id + '">Delete</button>' +
+      '</td></tr>';
+  }).join('');
+  $('emptyNote').classList.toggle('hidden', coachOrders.length > 0);
+}
+
+$('ordersTbl').addEventListener('change', function(e){
+  var id = e.target.dataset.paid;
+  if (!id) return;
+  coachApi('paid', { id: id, paid: e.target.checked })
+    .catch(function(err){ say($('cMsg'), err.message, 'err'); });
+});
+
+$('ordersTbl').addEventListener('click', function(e){
+  var b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.del) {
+    if (b.dataset.armed !== '1') {
+      b.dataset.armed = '1'; b.textContent = 'Sure?';
+      setTimeout(function(){ b.dataset.armed = '0'; b.textContent = 'Delete'; }, 4000);
+      return;
+    }
+    coachApi('delete', { id: b.dataset.del })
+      .then(function(){ say($('cMsg'), 'Order deleted.', 'ok'); })
+      .catch(function(err){ say($('cMsg'), err.message, 'err'); });
+  }
+  if (b.dataset.edit) openEditor(coachOrders.filter(function(o){ return o.id === b.dataset.edit; })[0]);
+});
+
+$('addOrder').addEventListener('click', function(){ openEditor(null); });
+
+function openEditor(order){
+  var old = $('editorRow');
+  if (old) old.remove();
+  var ePlayers = (order && order.players && order.players.length ? order.players : [{ name: '', number: '' }])
+    .map(function(p){ return { name: p.name || '', number: p.number == null ? '' : String(p.number) }; });
+
+  var wrap = document.createElement('div');
+  wrap.id = 'editorRow';
+  wrap.style.cssText = 'margin-top:14px;border:1px solid var(--gold-dim);border-radius:12px;padding:14px;background:var(--panel2)';
+  wrap.innerHTML =
+    '<p class="eyebrow">' + (order ? 'Editing ' + order.code : 'New order') + '</p>' +
+    '<p class="lbl">Players</p><div id="ePlayerRows"></div>' +
+    '<button type="button" class="btn small ghost" id="eAddPlayer" style="margin:2px 0 16px">+ Add another player</button>' +
+    '<div class="two even"><div class="field"><label>Parent</label><input type="text" id="eR" value="' + esc(order ? order.parent : '') + '"></div>' +
+    '<div class="field"><label>Phone or email</label><input type="text" id="eC" value="' + esc(order ? order.contact : '') + '"></div></div>' +
+    '<p class="lbl">Shirts</p><div class="priceGrid" id="eSizes"></div>' +
+    '<div class="field" style="margin-top:12px"><label>Note</label><input type="text" id="eNote" value="' + esc(order ? (order.note || '') : '') + '"></div>' +
+    '<div class="row-actions"><button class="btn small" id="eSave">Save</button>' +
+    '<button class="btn small ghost" id="eCancel">Cancel</button></div>';
+  $('ordersTbl').parentNode.parentNode.appendChild(wrap);
+
+  function drawEPlayers(){
+    wrap.querySelector('#ePlayerRows').innerHTML = ePlayers.map(function(p, i){
+      return '<div class="prow">' +
+        '<input type="text" data-epn="' + i + '" value="' + esc(p.name) + '" placeholder="Player name" aria-label="Player ' + (i+1) + ' name">' +
+        '<input type="text" data-epnum="' + i + '" value="' + esc(p.number) + '" inputmode="numeric" placeholder="#" aria-label="Player ' + (i+1) + ' jersey number">' +
+        '<button type="button" class="rm" data-eprm="' + i + '"' + (ePlayers.length < 2 ? ' disabled' : '') + ' aria-label="Remove this player">&times;</button>' +
+      '</div>';
+    }).join('');
+  }
+  drawEPlayers();
+  wrap.querySelector('#ePlayerRows').addEventListener('input', function(e){
+    var t = e.target;
+    if (t.dataset.epn != null) ePlayers[+t.dataset.epn].name = t.value;
+    if (t.dataset.epnum != null) ePlayers[+t.dataset.epnum].number = t.value.replace(/\D/g, '');
+  });
+  wrap.querySelector('#ePlayerRows').addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b || b.dataset.eprm == null || ePlayers.length < 2) return;
+    ePlayers.splice(+b.dataset.eprm, 1);
+    drawEPlayers();
+  });
+  wrap.querySelector('#eAddPlayer').addEventListener('click', function(){
+    if (ePlayers.length >= 8) return;
+    ePlayers.push({ name: '', number: '' });
+    drawEPlayers();
+  });
+
+  $('eSizes').innerHTML = SIZES.map(function(s){
+    return '<div><span class="lbl">' + s + '</span><input type="text" inputmode="numeric" data-es="' + s +
+      '" value="' + (order && order.sizes[s] ? order.sizes[s] : 0) + '"></div>';
+  }).join('');
+  $('eCancel').addEventListener('click', function(){ wrap.remove(); });
+  $('eSave').addEventListener('click', function(){
+    var sizes = {};
+    SIZES.forEach(function(s){
+      var v = parseInt(String(wrap.querySelector('[data-es="' + s + '"]').value).replace(/\D/g, ''), 10);
+      sizes[s] = isNaN(v) ? 0 : v;
+    });
+    var body = {
+      id: order ? order.id : undefined,
+      players: ePlayers.map(function(p){ return { name: p.name.trim(), number: p.number }; }).filter(function(p){ return p.name; }),
+      parent: $('eR').value, contact: $('eC').value, sizes: sizes, note: $('eNote').value
+    };
+    coachApi(order ? 'edit' : 'add', body).then(function(){
+      wrap.remove();
+      say($('cMsg'), order ? 'Order updated.' : 'Order added.', 'ok');
+    }).catch(function(err){ say($('cMsg'), err.message, 'err'); });
+  });
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* settings */
+function fillSettings(){
+  $('openToggle').checked = !!cfg.open;
+  $('setTitle').value = cfg.title || '';
+  $('setDeadline').value = cfg.deadline || '';
+  $('setMsg2').value = cfg.message || '';
+  $('setPay').value = cfg.payNote || '';
+  $('setFront').value = cfg.images.front || '';
+  $('setBack').value = cfg.images.back || '';
+  $('priceGrid').innerHTML = SIZES.map(function(s){
+    return '<div><span class="lbl">' + s + '</span><input type="text" inputmode="decimal" data-price="' + s +
+      '" value="' + cfg.prices[s] + '"></div>';
+  }).join('');
+}
+$('saveSettings').addEventListener('click', function(){
+  var prices = {};
+  var bad = null;
+  SIZES.forEach(function(s){
+    var v = Number($('priceGrid').querySelector('[data-price="' + s + '"]').value);
+    if (!isFinite(v) || v < 0) bad = s;
+    prices[s] = v;
+  });
+  if (bad) { say($('setMsg'), 'The price for ' + bad + ' needs to be a number.', 'err'); return; }
+  coachApi('settings', { settings: {
+    open: $('openToggle').checked,
+    title: $('setTitle').value,
+    deadline: $('setDeadline').value,
+    message: $('setMsg2').value,
+    payNote: $('setPay').value,
+    prices: prices,
+    images: { front: $('setFront').value, back: $('setBack').value }
+  }}).then(function(){
+    fillSettings();
+    say($('setMsg'), 'Saved. Parents see it on their next refresh.', 'ok');
+  }).catch(function(err){ say($('setMsg'), err.message, 'err'); });
+});
+
+$('clearBtn').addEventListener('click', function(){
+  coachApi('reset', { confirm: $('clearWord').value.trim() }).then(function(){
+    $('clearWord').value = '';
+    say($('setMsg'), 'Every order cleared. Fresh season.', 'ok');
+  }).catch(function(err){ say($('setMsg'), err.message, 'err'); });
+});
+
+/* exports */
+function download(name, text){
+  var url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  var a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+}
+var q = function(v){ return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+
+$('csvOrders').addEventListener('click', function(){
+  var head = ['Players', 'Parent', 'Contact'].concat(SIZES, ['Shirts', 'Total', 'Paid', 'Code', 'Placed']);
+  var rows = coachOrders.map(function(o){
+    var n = SIZES.reduce(function(a, s){ return a + (o.sizes[s] || 0); }, 0);
+    var players = (o.players || []).map(function(p){ return p.name + (p.number != null ? ' #' + p.number : ''); }).join('; ');
+    return [players, o.parent, o.contact]
+      .concat(SIZES.map(function(s){ return o.sizes[s] || 0; }))
+      .concat([n, o.total.toFixed(2), o.paid ? 'yes' : 'no', o.code, new Date(o.at).toLocaleDateString()])
+      .map(q).join(',');
+  });
+  download('bayou-legends-orders.csv', [head.map(q).join(',')].concat(rows).join('\n'));
+});
+
+$('csvSizes').addEventListener('click', function(){
+  var t = sizeTotals();
+  var rows = SIZES.map(function(s){ return [s, t[s], cfg.prices[s].toFixed(2), (t[s] * cfg.prices[s]).toFixed(2)].map(q).join(','); });
+  download('bayou-legends-print-run.csv', [['Size', 'Quantity', 'Price', 'Line total'].map(q).join(',')].concat(rows).join('\n'));
+});
+
+$('printBtn').addEventListener('click', function(){ window.print(); });
+
+/* ---------------- start ---------------- */
+
+function boot(){
+  drawPlayers();
+  api('get').then(function(res){
+    cfg = res.config;
+    applyConfig();
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(LS_CODES) || '[]'); } catch (e) {}
+    if (saved.length) {
+      api('lookup', { code: saved[saved.length - 1] }).then(function(r){
+        showReceipt(r.order, 'This device already has an order in. Change it below if you need to.');
+      }).catch(function(){ forget(saved[saved.length - 1]); });
+    }
+    if (location.hash === '#coach') $('coachLink').click();
+  }).catch(function(err){
+    say($('shopMsg'), err.message, 'err');
+  });
+}
+boot();
+})();
+</script>
+</body>
+</html>
