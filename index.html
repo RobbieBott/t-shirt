@@ -307,6 +307,8 @@ body.busy .btn{position:relative}
         </div>
 
         <p class="hint" id="payNote"></p>
+        <p class="hint" id="codeHeadsUp">The next screen gives you a four-character order code. Save it &mdash;
+          no confirmation email or text goes out, and that code is how you pull this order back up.</p>
 
         <div class="totalbar">
           <div class="tally" aria-live="polite">
@@ -325,8 +327,16 @@ body.busy .btn{position:relative}
       <p class="eyebrow">Order in</p>
       <h2 id="rHead">You're on the list</h2>
       <div class="msg" id="rMsg" role="status"></div>
-      <p class="hint" style="margin-top:12px">Keep this code — it's how you change or cancel the order before the deadline.</p>
+      <div class="msg info show" style="margin-top:12px">
+        <strong>Write this code down or screenshot it now.</strong> There is no email or text
+        confirmation &mdash; this is the only record you get, and it is what you need to change,
+        cancel, or check on this order later.
+      </div>
       <div class="code" id="rCode">----</div>
+      <p class="hint" style="text-align:center;margin:0 0 4px">
+        <button class="linkbtn" id="copyCode">Copy code</button>
+        <span id="copyDone" class="hidden" style="color:var(--ok)"> &check; copied</span>
+      </p>
       <p class="hint" id="rWho"></p>
       <ul class="rlist" id="rList"></ul>
       <div class="tally">
@@ -858,6 +868,7 @@ function showReceipt(o, msg){
   $('receipt').classList.remove('hidden');
   say($('rMsg'), msg || '', 'ok');
   $('rCode').textContent = o.code;
+  $('copyDone').classList.add('hidden');
   var who = (o.players || []).map(function(p){ return p.name + (p.number != null ? ' #' + p.number : ''); }).join(', ');
   $('rWho').textContent = who + ' \u2014 ordered by ' + o.parent;
   var n = 0;
@@ -872,6 +883,34 @@ function showReceipt(o, msg){
   $('editOrder').disabled = o.paid || !cfg.open;
   $('cancelOrder').disabled = o.paid || !cfg.open;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('copyCode').addEventListener('click', function(){
+  var code = $('rCode').textContent.trim();
+  var flash = function(){
+    $('copyDone').classList.remove('hidden');
+    setTimeout(function(){ $('copyDone').classList.add('hidden'); }, 2500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(flash, function(){ legacyCopy(code, flash); });
+  } else {
+    legacyCopy(code, flash);
+  }
+});
+
+/* clipboard API needs https and permission; this covers the rest */
+function legacyCopy(text, done){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:absolute;left:-9999px;top:0';
+  document.body.appendChild(ta);
+  ta.select();
+  var worked = false;
+  try { worked = document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (worked) done();
+  else say($('rMsg'), 'Copying is blocked in this browser \u2014 write down ' + text + ' instead.', 'info');
 }
 
 $('editOrder').addEventListener('click', function(){
