@@ -218,6 +218,14 @@ footer{color:var(--muted);font-size:13.5px;text-align:center;padding:30px 0 40px
 footer .fcrest{width:34px;opacity:.8;display:block;margin:0 auto 10px}
 .hidden{display:none !important}
 
+/* while a save is in flight nothing else may fire a second write */
+body.busy{cursor:progress}
+body.busy .btn,
+body.busy .step button,
+body.busy .prow .rm,
+body.busy input[type=checkbox]{pointer-events:none;opacity:.55}
+body.busy .btn{position:relative}
+
 @media print{
   body{background:#fff;color:#000}
   .noprint,header,footer,.viewer{display:none !important}
@@ -463,6 +471,11 @@ footer .fcrest{width:34px;opacity:.8;display:block;margin:0 auto 10px}
           <button class="btn" id="saveSettings">Save settings</button>
 
           <div class="sep"></div>
+          <p class="lbl">Undo</p>
+          <p class="hint" style="margin:0 0 10px">Rolls the whole store back to how it was before the last change &mdash; the last save, edit, delete, or clear. Only one step back is kept.</p>
+          <button class="btn ghost" id="restoreBtn">Restore last save</button>
+
+          <div class="sep"></div>
           <p class="lbl">Start a new season</p>
           <div class="two" style="align-items:end">
             <div class="field" style="margin:0">
@@ -566,8 +579,32 @@ function say(el, text, kind){
 
 /* ---------------- transport ---------------- */
 
+/* Anything that changes the store. The function reads the whole store, edits it,
+   and writes it back, so two of these overlapping means the slower one saves a
+   copy from before the faster one landed. Queue them and that cannot happen. */
+var WRITES = ['submit','update','cancel','add','edit','paid','delete','settings','reset','restore'];
+var writeQueue = Promise.resolve();
+var busyCount = 0;
+
+function setBusy(on){
+  busyCount = Math.max(0, busyCount + (on ? 1 : -1));
+  document.body.classList.toggle('busy', busyCount > 0);
+  document.body.setAttribute('aria-busy', busyCount > 0 ? 'true' : 'false');
+}
+
 function api(action, body){
   var payload = Object.assign({ action: action }, body || {});
+  if (WRITES.indexOf(action) < 0) return send(payload);
+
+  setBusy(true);
+  var run = writeQueue.then(function(){ return send(payload); },
+                            function(){ return send(payload); });
+  writeQueue = run.then(function(){ setBusy(false); },
+                        function(){ setBusy(false); });
+  return run;
+}
+
+function send(payload){
   if (demoMode) return Promise.resolve(demo(payload));
   return fetch('/api/orders', {
     method: 'POST',
@@ -612,10 +649,30 @@ function dConf(){
 function dTotal(sizes){
   return SIZES.reduce(function(t,s){ return t + (D.prices[s] || 0) * (sizes[s] || 0); }, 0);
 }
+/* mirrors the server's one-generation backup so preview mode behaves the same */
+var DPREV = null;
+function dSnap(){
+  DPREV = JSON.parse(JSON.stringify({ open:D.open, title:D.title, message:D.message,
+    deadline:D.deadline, payNote:D.payNote, prices:D.prices, images:D.images, orders:D.orders }));
+}
+
 function demo(b){
   var i;
   if (b.action === 'get') return { config: dConf() };
   if (b.action === 'auth') return { ok:true, config: dConf(), orders: D.orders };
+
+  if (b.action === 'restore') {
+    if (!DPREV) throw new Error('Nothing to roll back to yet.');
+    D.open = DPREV.open; D.title = DPREV.title; D.message = DPREV.message;
+    D.deadline = DPREV.deadline; D.payNote = DPREV.payNote;
+    D.prices = JSON.parse(JSON.stringify(DPREV.prices));
+    D.images = JSON.parse(JSON.stringify(DPREV.images));
+    D.orders = JSON.parse(JSON.stringify(DPREV.orders));
+    return { ok:true, restored: D.orders.length, config:dConf(), orders:D.orders };
+  }
+
+  /* snapshot before anything that changes data (a lookup must not clobber the undo point) */
+  if (WRITES.indexOf(b.action) > -1) dSnap();
   if (b.action === 'submit' || b.action === 'add') {
     var count = SIZES.reduce(function(t,s){ return t + (Number(b.sizes[s]) || 0); }, 0);
     var plist = (Array.isArray(b.players) ? b.players : []).filter(function(p){ return p && p.name; });
@@ -1127,6 +1184,27 @@ $('clearBtn').addEventListener('click', function(){
   coachApi('reset', { confirm: $('clearWord').value.trim() }).then(function(){
     $('clearWord').value = '';
     say($('setMsg'), 'Every order cleared. Fresh season.', 'ok');
+  }).catch(function(err){ say($('setMsg'), err.message, 'err'); });
+});
+
+/* restore is itself a change, so make it deliberate */
+$('restoreBtn').addEventListener('click', function(){
+  var btn = this;
+  if (btn.dataset.armed !== '1') {
+    btn.dataset.armed = '1';
+    btn.textContent = 'Tap again to roll back';
+    setTimeout(function(){
+      btn.dataset.armed = '0';
+      btn.textContent = 'Restore last save';
+    }, 5000);
+    return;
+  }
+  btn.dataset.armed = '0';
+  btn.textContent = 'Restore last save';
+  coachApi('restore').then(function(res){
+    fillSettings();
+    say($('setMsg'), 'Rolled back \u2014 ' + res.restored +
+      (res.restored === 1 ? ' order is' : ' orders are') + ' on the list now.', 'ok');
   }).catch(function(err){ say($('setMsg'), err.message, 'err'); });
 });
 
