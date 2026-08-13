@@ -315,7 +315,7 @@ body.busy .btn{position:relative}
             <div><span class="num" id="tShirts">0</span><span class="cap">Shirts</span></div>
             <div><span class="num" id="tMoney">$0</span><span class="cap">Total due</span></div>
           </div>
-          <button class="btn" id="submitBtn">Place order</button>
+          <button class="btn" id="submitBtn">Submit Interest</button>
         </div>
       </div>
     </div>
@@ -936,7 +936,7 @@ $('newOrder').addEventListener('click', function(){
   players = [{ name: '', number: '' }];
   $('note').value = '';
   SIZES.forEach(function(s){ qty[s] = 0; });
-  $('submitBtn').textContent = 'Place order';
+  $('submitBtn').textContent = 'Submit Interest';
   $('submitBtn').disabled = true;
   say($('shopMsg'), '', 'info');
   $('receipt').classList.add('hidden');
@@ -962,7 +962,7 @@ $('cancelOrder').addEventListener('click', function(){
     $('receipt').classList.add('hidden');
     $('shop').classList.remove('hidden');
     SIZES.forEach(function(s){ qty[s] = 0; });
-    $('submitBtn').textContent = 'Place order';
+    $('submitBtn').textContent = 'Submit Interest';
     drawSizes();
     say($('shopMsg'), 'Order cancelled. Nothing is on the list for you now.', 'ok');
   }).catch(function(err){ say($('rMsg'), err.message, 'err'); });
