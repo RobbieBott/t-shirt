@@ -1,8 +1,7 @@
 import { getStore } from '@netlify/blobs';
 
 const KEY = 'store';
-const BACKUP = 'store-prev';
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+const SIZES = ['YXS', 'YS', 'YM', 'YL', 'YXL', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
 
 const DEFAULTS = {
   v: 1,
@@ -11,36 +10,27 @@ const DEFAULTS = {
   message: 'One order per family, please \u2014 add every player you\u2019re shirting for below. Shirts hand out at practice once the whole run comes back from the printer.',
   deadline: '',
   payNote: 'Pay Coach Robbie at practice — cash or Venmo. Orders are not sent to the printer until paid.',
-  prices: { XS: 18, S: 18, M: 18, L: 18, XL: 18, '2XL': 20, '3XL': 21, '4XL': 22 },
+  prices: {
+    YXS: 15, YS: 15, YM: 15, YL: 15, YXL: 15,
+    XS: 18, S: 18, M: 18, L: 18, XL: 18, '2XL': 20, '3XL': 21, '4XL': 22
+  },
   images: { front: 'assets/shirt-front.jpg', back: 'assets/shirt-back.jpg' },
   pin: null,
   orders: []
 };
 
-/* Strong consistency matters here. The default (eventual) can serve a copy of the
-   store up to 60s stale, and since every action is read-modify-write, a stale read
-   silently overwrites whatever was saved in between — orders vanish. */
-const store = () => getStore({ name: 'shirts', consistency: 'strong' });
+const store = () => getStore('shirts');
 
 async function read() {
-  /* Deliberately NOT wrapped in try/catch. A failed read used to fall back to an
-     empty store, and the next write would then wipe every order. Letting it throw
-     means the handler returns a 500 and nothing is written. */
-  const d = await store().get(KEY, { type: 'json' }); // null only before the first write
+  let d = null;
+  try { d = await store().get(KEY, { type: 'json' }); } catch (e) { d = null; }
   const merged = { ...DEFAULTS, ...(d || {}) };
   merged.prices = { ...DEFAULTS.prices, ...(d?.prices || {}) };
   merged.images = { ...DEFAULTS.images, ...(d?.images || {}) };
   merged.orders = Array.isArray(d?.orders) ? d.orders : [];
   return merged;
 }
-/* `prior` is the store exactly as it was read, before this request touched it.
-   Keeping one generation back means a bad save is recoverable via 'restore'. */
-async function write(d, prior) {
-  if (prior) {
-    try { await store().setJSON(BACKUP, prior); } catch (e) { /* backup is best-effort */ }
-  }
-  await store().setJSON(KEY, d);
-}
+async function write(d) { await store().setJSON(KEY, d); }
 
 const reply = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -155,7 +145,6 @@ export default async (req) => {
 
   try {
     const d = await read();
-    const prior = JSON.parse(JSON.stringify(d)); // untouched copy, for the backup slot
 
     /* ----- open to everyone ----- */
 
@@ -181,7 +170,7 @@ export default async (req) => {
         at: new Date().toISOString()
       };
       d.orders.push(order);
-      await write(d, prior);
+      await write(d);
       return reply({ ok: true, order, config: publicConfig(d) });
     }
 
@@ -200,7 +189,7 @@ export default async (req) => {
         sizes: v.sizes, note: v.note, total: v.total,
         editedAt: new Date().toISOString()
       };
-      await write(d, prior);
+      await write(d);
       return reply({ ok: true, order: d.orders[i], config: publicConfig(d) });
     }
 
@@ -211,7 +200,7 @@ export default async (req) => {
       if (i < 0) return reply({ error: 'No order matches that code.' }, 404);
       if (d.orders[i].paid) return reply({ error: 'This order is marked paid. Ask the coach to cancel it.' }, 403);
       d.orders.splice(i, 1);
-      await write(d, prior);
+      await write(d);
       return reply({ ok: true });
     }
 
@@ -222,7 +211,7 @@ export default async (req) => {
       if (supplied.length < 4) return reply({ error: 'Use a PIN of at least 4 characters.' }, 400);
       if (!process.env.COACH_PIN && !d.pin) {       // first run: this PIN becomes the PIN
         d.pin = supplied;
-        await write(d, prior);
+        await write(d);
         return reply({ ok: true, firstRun: true, config: publicConfig(d), orders: d.orders });
       }
       if (!pinOk(d, supplied)) return reply({ error: 'That PIN did not match.' }, 401);
@@ -231,26 +220,9 @@ export default async (req) => {
 
     if (!pinOk(d, body.pin)) return reply({ error: 'That PIN did not match.' }, 401);
     const done = async () => {
-      await write(d, prior);
+      await write(d);
       return reply({ ok: true, config: publicConfig(d), orders: d.orders });
     };
-
-    /* Undo the most recent write. Deliberately does not touch the backup slot,
-       so calling it twice in a row is a no-op rather than a ping-pong. */
-    if (action === 'restore') {
-      const b = await store().get(BACKUP, { type: 'json' });
-      if (!b || !Array.isArray(b.orders)) return reply({ error: 'Nothing to roll back to yet.' }, 404);
-      const restored = { ...DEFAULTS, ...b };
-      restored.prices = { ...DEFAULTS.prices, ...(b.prices || {}) };
-      restored.images = { ...DEFAULTS.images, ...(b.images || {}) };
-      await store().setJSON(KEY, restored);
-      return reply({
-        ok: true,
-        restored: restored.orders.length,
-        config: publicConfig(restored),
-        orders: restored.orders
-      });
-    }
 
     if (action === 'settings') {
       const s = body.settings || {};

@@ -121,6 +121,10 @@ input::placeholder,textarea::placeholder{color:#5F6E5C}
   padding:9px 12px;border-bottom:1px solid rgba(44,59,47,.7)
 }
 .srow:last-child{border-bottom:0}
+.sgroup{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  font-size:11.5px;color:var(--gold);background:#101911;padding:7px 12px;border-bottom:1px solid var(--line)
+}
 .srow.has{background:rgba(201,164,76,.07)}
 .sname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:.06em}
 .sprice{color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.04em}
@@ -218,14 +222,6 @@ footer{color:var(--muted);font-size:13.5px;text-align:center;padding:30px 0 40px
 footer .fcrest{width:34px;opacity:.8;display:block;margin:0 auto 10px}
 .hidden{display:none !important}
 
-/* while a save is in flight nothing else may fire a second write */
-body.busy{cursor:progress}
-body.busy .btn,
-body.busy .step button,
-body.busy .prow .rm,
-body.busy input[type=checkbox]{pointer-events:none;opacity:.55}
-body.busy .btn{position:relative}
-
 @media print{
   body{background:#fff;color:#000}
   .noprint,header,footer,.viewer{display:none !important}
@@ -307,15 +303,13 @@ body.busy .btn{position:relative}
         </div>
 
         <p class="hint" id="payNote"></p>
-        <p class="hint" id="codeHeadsUp">The next screen gives you a four-character order code. Save it &mdash;
-          no confirmation email or text goes out, and that code is how you pull this order back up.</p>
 
         <div class="totalbar">
           <div class="tally" aria-live="polite">
             <div><span class="num" id="tShirts">0</span><span class="cap">Shirts</span></div>
             <div><span class="num" id="tMoney">$0</span><span class="cap">Total due</span></div>
           </div>
-          <button class="btn" id="submitBtn">Submit Interest</button>
+          <button class="btn" id="submitBtn">Place order</button>
         </div>
       </div>
     </div>
@@ -327,16 +321,8 @@ body.busy .btn{position:relative}
       <p class="eyebrow">Order in</p>
       <h2 id="rHead">You're on the list</h2>
       <div class="msg" id="rMsg" role="status"></div>
-      <div class="msg info show" style="margin-top:12px">
-        <strong>Write this code down or screenshot it now.</strong> There is no email or text
-        confirmation &mdash; this is the only record you get, and it is what you need to change,
-        cancel, or check on this order later.
-      </div>
+      <p class="hint" style="margin-top:12px">Keep this code — it's how you change or cancel the order before the deadline.</p>
       <div class="code" id="rCode">----</div>
-      <p class="hint" style="text-align:center;margin:0 0 4px">
-        <button class="linkbtn" id="copyCode">Copy code</button>
-        <span id="copyDone" class="hidden" style="color:var(--ok)"> &check; copied</span>
-      </p>
       <p class="hint" id="rWho"></p>
       <ul class="rlist" id="rList"></ul>
       <div class="tally">
@@ -481,11 +467,6 @@ body.busy .btn{position:relative}
           <button class="btn" id="saveSettings">Save settings</button>
 
           <div class="sep"></div>
-          <p class="lbl">Undo</p>
-          <p class="hint" style="margin:0 0 10px">Rolls the whole store back to how it was before the last change &mdash; the last save, edit, delete, or clear. Only one step back is kept.</p>
-          <button class="btn ghost" id="restoreBtn">Restore last save</button>
-
-          <div class="sep"></div>
           <p class="lbl">Start a new season</p>
           <div class="two" style="align-items:end">
             <div class="field" style="margin:0">
@@ -509,10 +490,17 @@ body.busy .btn{position:relative}
 <dialog id="chartDlg">
   <div class="pad" style="padding:18px">
     <h2>Size chart</h2>
-    <p class="hint">Adult unisex tee, measured flat in inches. Chest is half the shirt, pit to pit.</p>
+    <p class="hint">Measured flat in inches. Chest is half the shirt, pit to pit.</p>
     <table class="tbl" style="margin-top:10px">
       <thead><tr><th>Size</th><th>Chest</th><th>Length</th></tr></thead>
       <tbody>
+        <tr><td colspan="3" style="color:var(--gold);font-family:'Barlow Condensed',sans-serif;letter-spacing:.18em;text-transform:uppercase;font-size:11.5px;padding-top:12px">Youth</td></tr>
+        <tr><td>Youth XS</td><td>13</td><td>18</td></tr>
+        <tr><td>Youth S</td><td>14</td><td>20</td></tr>
+        <tr><td>Youth M</td><td>15</td><td>22</td></tr>
+        <tr><td>Youth L</td><td>16&frac12;</td><td>23&frac12;</td></tr>
+        <tr><td>Youth XL</td><td>18</td><td>25</td></tr>
+        <tr><td colspan="3" style="color:var(--gold);font-family:'Barlow Condensed',sans-serif;letter-spacing:.18em;text-transform:uppercase;font-size:11.5px;padding-top:12px">Adult</td></tr>
         <tr><td>XS</td><td>17</td><td>27</td></tr>
         <tr><td>S</td><td>18</td><td>28</td></tr>
         <tr><td>M</td><td>20</td><td>29</td></tr>
@@ -532,7 +520,9 @@ body.busy .btn{position:relative}
 (function(){
 'use strict';
 
-var SIZES = ['XS','S','M','L','XL','2XL','3XL','4XL'];
+var SIZES = ['YXS','YS','YM','YL','YXL','XS','S','M','L','XL','2XL','3XL','4XL'];
+var YOUTH = { YXS:1, YS:1, YM:1, YL:1, YXL:1 };
+var SIZE_LABEL = { YXS:'Youth XS', YS:'Youth S', YM:'Youth M', YL:'Youth L', YXL:'Youth XL' };
 var LS_CODES = 'bl-shirt-codes';
 var cfg = null, myOrder = null, coachPin = null, coachOrders = [], demoMode = false, editingId = null;
 var players = [{ name: '', number: '' }];
@@ -589,32 +579,8 @@ function say(el, text, kind){
 
 /* ---------------- transport ---------------- */
 
-/* Anything that changes the store. The function reads the whole store, edits it,
-   and writes it back, so two of these overlapping means the slower one saves a
-   copy from before the faster one landed. Queue them and that cannot happen. */
-var WRITES = ['submit','update','cancel','add','edit','paid','delete','settings','reset','restore'];
-var writeQueue = Promise.resolve();
-var busyCount = 0;
-
-function setBusy(on){
-  busyCount = Math.max(0, busyCount + (on ? 1 : -1));
-  document.body.classList.toggle('busy', busyCount > 0);
-  document.body.setAttribute('aria-busy', busyCount > 0 ? 'true' : 'false');
-}
-
 function api(action, body){
   var payload = Object.assign({ action: action }, body || {});
-  if (WRITES.indexOf(action) < 0) return send(payload);
-
-  setBusy(true);
-  var run = writeQueue.then(function(){ return send(payload); },
-                            function(){ return send(payload); });
-  writeQueue = run.then(function(){ setBusy(false); },
-                        function(){ setBusy(false); });
-  return run;
-}
-
-function send(payload){
   if (demoMode) return Promise.resolve(demo(payload));
   return fetch('/api/orders', {
     method: 'POST',
@@ -648,7 +614,7 @@ var D = {
   message: 'One order per family, please \u2014 add every player you\u2019re shirting for below. Shirts hand out at practice once the whole run comes back from the printer.',
   deadline: '',
   payNote: 'Pay Coach Robbie at practice — cash or Venmo. Orders are not sent to the printer until paid.',
-  prices: { XS:18, S:18, M:18, L:18, XL:18, '2XL':20, '3XL':21, '4XL':22 },
+  prices: { YXS:15, YS:15, YM:15, YL:15, YXL:15, XS:18, S:18, M:18, L:18, XL:18, '2XL':20, '3XL':21, '4XL':22 },
   images: { front:'assets/shirt-front.jpg', back:'assets/shirt-back.jpg' },
   orders: []
 };
@@ -659,30 +625,10 @@ function dConf(){
 function dTotal(sizes){
   return SIZES.reduce(function(t,s){ return t + (D.prices[s] || 0) * (sizes[s] || 0); }, 0);
 }
-/* mirrors the server's one-generation backup so preview mode behaves the same */
-var DPREV = null;
-function dSnap(){
-  DPREV = JSON.parse(JSON.stringify({ open:D.open, title:D.title, message:D.message,
-    deadline:D.deadline, payNote:D.payNote, prices:D.prices, images:D.images, orders:D.orders }));
-}
-
 function demo(b){
   var i;
   if (b.action === 'get') return { config: dConf() };
   if (b.action === 'auth') return { ok:true, config: dConf(), orders: D.orders };
-
-  if (b.action === 'restore') {
-    if (!DPREV) throw new Error('Nothing to roll back to yet.');
-    D.open = DPREV.open; D.title = DPREV.title; D.message = DPREV.message;
-    D.deadline = DPREV.deadline; D.payNote = DPREV.payNote;
-    D.prices = JSON.parse(JSON.stringify(DPREV.prices));
-    D.images = JSON.parse(JSON.stringify(DPREV.images));
-    D.orders = JSON.parse(JSON.stringify(DPREV.orders));
-    return { ok:true, restored: D.orders.length, config:dConf(), orders:D.orders };
-  }
-
-  /* snapshot before anything that changes data (a lookup must not clobber the undo point) */
-  if (WRITES.indexOf(b.action) > -1) dSnap();
   if (b.action === 'submit' || b.action === 'add') {
     var count = SIZES.reduce(function(t,s){ return t + (Number(b.sizes[s]) || 0); }, 0);
     var plist = (Array.isArray(b.players) ? b.players : []).filter(function(p){ return p && p.name; });
@@ -766,18 +712,28 @@ function drawSizes(){
   var box = $('sizeRows');
   box.innerHTML = '';
   var base = cfg.prices.L;
+  var lastGroup = null;
   SIZES.forEach(function(s){
+    var group = YOUTH[s] ? 'Youth' : 'Adult';
+    if (group !== lastGroup) {
+      var head = document.createElement('div');
+      head.className = 'sgroup';
+      head.textContent = group;
+      box.appendChild(head);
+      lastGroup = group;
+    }
     var price = cfg.prices[s];
+    var label = SIZE_LABEL[s] || s;
     var row = document.createElement('div');
     row.className = 'srow' + (qty[s] > 0 ? ' has' : '');
     row.innerHTML =
-      '<div><span class="sname">' + s + '</span>' +
+      '<div><span class="sname">' + (YOUTH[s] ? s.slice(1) : s) + '</span>' +
         (price > base ? '<span class="sup">+' + money(price - base) + '</span>' : '') +
         '<div class="sprice">' + money(price) + ' each</div></div>' +
       '<div class="step">' +
-        '<button type="button" data-dec="' + s + '" aria-label="One fewer ' + s + '"' + (qty[s] ? '' : ' disabled') + '>&minus;</button>' +
-        '<input type="text" inputmode="numeric" data-qty="' + s + '" value="' + qty[s] + '" aria-label="' + s + ' quantity">' +
-        '<button type="button" data-inc="' + s + '" aria-label="One more ' + s + '">+</button>' +
+        '<button type="button" data-dec="' + s + '" aria-label="One fewer ' + label + '"' + (qty[s] ? '' : ' disabled') + '>&minus;</button>' +
+        '<input type="text" inputmode="numeric" data-qty="' + s + '" value="' + qty[s] + '" aria-label="' + label + ' quantity">' +
+        '<button type="button" data-inc="' + s + '" aria-label="One more ' + label + '">+</button>' +
       '</div>' +
       '<div class="sline">' + (qty[s] ? money(price * qty[s]) : '&mdash;') + '</div>';
     box.appendChild(row);
@@ -868,13 +824,12 @@ function showReceipt(o, msg){
   $('receipt').classList.remove('hidden');
   say($('rMsg'), msg || '', 'ok');
   $('rCode').textContent = o.code;
-  $('copyDone').classList.add('hidden');
   var who = (o.players || []).map(function(p){ return p.name + (p.number != null ? ' #' + p.number : ''); }).join(', ');
   $('rWho').textContent = who + ' \u2014 ordered by ' + o.parent;
   var n = 0;
   $('rList').innerHTML = SIZES.filter(function(s){ return o.sizes[s]; }).map(function(s){
     n += o.sizes[s];
-    return '<li><span class="q">' + o.sizes[s] + ' &times; ' + s + '</span><span>' + money((cfg.prices[s] || 0) * o.sizes[s]) + '</span></li>';
+    return '<li><span class="q">' + o.sizes[s] + ' &times; ' + (SIZE_LABEL[s] || s) + '</span><span>' + money((cfg.prices[s] || 0) * o.sizes[s]) + '</span></li>';
   }).join('');
   $('rShirts').textContent = n;
   $('rMoney').textContent = money(o.total);
@@ -883,34 +838,6 @@ function showReceipt(o, msg){
   $('editOrder').disabled = o.paid || !cfg.open;
   $('cancelOrder').disabled = o.paid || !cfg.open;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-$('copyCode').addEventListener('click', function(){
-  var code = $('rCode').textContent.trim();
-  var flash = function(){
-    $('copyDone').classList.remove('hidden');
-    setTimeout(function(){ $('copyDone').classList.add('hidden'); }, 2500);
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code).then(flash, function(){ legacyCopy(code, flash); });
-  } else {
-    legacyCopy(code, flash);
-  }
-});
-
-/* clipboard API needs https and permission; this covers the rest */
-function legacyCopy(text, done){
-  var ta = document.createElement('textarea');
-  ta.value = text;
-  ta.setAttribute('readonly', '');
-  ta.style.cssText = 'position:absolute;left:-9999px;top:0';
-  document.body.appendChild(ta);
-  ta.select();
-  var worked = false;
-  try { worked = document.execCommand('copy'); } catch (e) {}
-  document.body.removeChild(ta);
-  if (worked) done();
-  else say($('rMsg'), 'Copying is blocked in this browser \u2014 write down ' + text + ' instead.', 'info');
 }
 
 $('editOrder').addEventListener('click', function(){
@@ -936,7 +863,7 @@ $('newOrder').addEventListener('click', function(){
   players = [{ name: '', number: '' }];
   $('note').value = '';
   SIZES.forEach(function(s){ qty[s] = 0; });
-  $('submitBtn').textContent = 'Submit Interest';
+  $('submitBtn').textContent = 'Place order';
   $('submitBtn').disabled = true;
   say($('shopMsg'), '', 'info');
   $('receipt').classList.add('hidden');
@@ -962,7 +889,7 @@ $('cancelOrder').addEventListener('click', function(){
     $('receipt').classList.add('hidden');
     $('shop').classList.remove('hidden');
     SIZES.forEach(function(s){ qty[s] = 0; });
-    $('submitBtn').textContent = 'Submit Interest';
+    $('submitBtn').textContent = 'Place order';
     drawSizes();
     say($('shopMsg'), 'Order cancelled. Nothing is on the list for you now.', 'ok');
   }).catch(function(err){ say($('rMsg'), err.message, 'err'); });
@@ -1159,7 +1086,7 @@ function openEditor(order){
   });
 
   $('eSizes').innerHTML = SIZES.map(function(s){
-    return '<div><span class="lbl">' + s + '</span><input type="text" inputmode="numeric" data-es="' + s +
+    return '<div><span class="lbl">' + (SIZE_LABEL[s] || s) + '</span><input type="text" inputmode="numeric" data-es="' + s +
       '" value="' + (order && order.sizes[s] ? order.sizes[s] : 0) + '"></div>';
   }).join('');
   $('eCancel').addEventListener('click', function(){ wrap.remove(); });
@@ -1192,7 +1119,7 @@ function fillSettings(){
   $('setFront').value = cfg.images.front || '';
   $('setBack').value = cfg.images.back || '';
   $('priceGrid').innerHTML = SIZES.map(function(s){
-    return '<div><span class="lbl">' + s + '</span><input type="text" inputmode="decimal" data-price="' + s +
+    return '<div><span class="lbl">' + (SIZE_LABEL[s] || s) + '</span><input type="text" inputmode="decimal" data-price="' + s +
       '" value="' + cfg.prices[s] + '"></div>';
   }).join('');
 }
@@ -1226,27 +1153,6 @@ $('clearBtn').addEventListener('click', function(){
   }).catch(function(err){ say($('setMsg'), err.message, 'err'); });
 });
 
-/* restore is itself a change, so make it deliberate */
-$('restoreBtn').addEventListener('click', function(){
-  var btn = this;
-  if (btn.dataset.armed !== '1') {
-    btn.dataset.armed = '1';
-    btn.textContent = 'Tap again to roll back';
-    setTimeout(function(){
-      btn.dataset.armed = '0';
-      btn.textContent = 'Restore last save';
-    }, 5000);
-    return;
-  }
-  btn.dataset.armed = '0';
-  btn.textContent = 'Restore last save';
-  coachApi('restore').then(function(res){
-    fillSettings();
-    say($('setMsg'), 'Rolled back \u2014 ' + res.restored +
-      (res.restored === 1 ? ' order is' : ' orders are') + ' on the list now.', 'ok');
-  }).catch(function(err){ say($('setMsg'), err.message, 'err'); });
-});
-
 /* exports */
 function download(name, text){
   var url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
@@ -1271,7 +1177,7 @@ $('csvOrders').addEventListener('click', function(){
 
 $('csvSizes').addEventListener('click', function(){
   var t = sizeTotals();
-  var rows = SIZES.map(function(s){ return [s, t[s], cfg.prices[s].toFixed(2), (t[s] * cfg.prices[s]).toFixed(2)].map(q).join(','); });
+  var rows = SIZES.map(function(s){ return [(SIZE_LABEL[s] || s), t[s], cfg.prices[s].toFixed(2), (t[s] * cfg.prices[s]).toFixed(2)].map(q).join(','); });
   download('bayou-legends-print-run.csv', [['Size', 'Quantity', 'Price', 'Line total'].map(q).join(',')].concat(rows).join('\n'));
 });
 
